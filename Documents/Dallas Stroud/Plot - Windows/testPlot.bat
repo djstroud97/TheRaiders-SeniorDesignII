@@ -1,4 +1,4 @@
-@echo on
+@echo off
 
 set /p DATAFILE="Enter the Data File: "
 dir /b/s %DATAFILE%|findstr %DATAFILE% > tmp.txt
