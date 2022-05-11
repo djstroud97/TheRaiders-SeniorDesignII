@@ -1,8 +1,8 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
-const int MPU = 0x68; // MPU6050 I2C address
-float AccX, AccY, AccZ;
+const int MPU = 0x68; //0x68 is the I2C address for the MPU6050, this allows the program to know we are using the 6050 out of the MPU series sensors
+float AccX, AccY, AccZ;     //float variables for Acceleration in X,Y,Z axis
 float accAngleX, accAngleY;
 float AccErrorX, AccErrorY;
 float elapsedTime, currentTime, previousTime;
@@ -12,15 +12,13 @@ File myFile; //File variable for opening 'datafile.txt'
 
 void setup() {
   Wire.begin();                      // Initialize comunication
-  Wire.beginTransmission(MPU);       // Start communication with MPU6050 // MPU=0x68
-  Wire.write(0x6B);                  // Talk to the register 6B
-  Wire.write(0x00);                  // Make reset - place a 0 into the 6B register
+  Wire.beginTransmission(MPU);    // starts communication with sensor 
+  Wire.write(0x6B);                  // Talk to the register 6B (power register)
+  Wire.write(0x00);                  // reset the sensor
   Wire.endTransmission(true);        //end the transmission
-
-  // Configure Accelerometer Sensitivity - Full Scale Range (default +/- 2g)
   Wire.beginTransmission(MPU);
   Wire.write(0x1C);                  //Talk to the ACCEL_CONFIG register (1C hex)
-  Wire.write(0x10);                  //Set the register bits as 00010000 (+/- 8g full scale range)
+  Wire.write(0x10);                  //Set the register bit as 0x18 to select full range (16G) as shown in datasheet
   Wire.endTransmission(true);
 
   // === SD FileIO Setup Here === //
@@ -40,18 +38,15 @@ void setup() {
   delay(20);
 }
 void loop() {
-  // === Read accelerometer data === //
+  // Obtain Accelerometer data
   Wire.beginTransmission(MPU);
   Wire.write(0x3B); // Start with register 0x3B (ACCEL_XOUT_H)
   Wire.endTransmission(false);
-  Wire.requestFrom(MPU, 6, true); // Read 6 registers total, each axis value is stored in 2 registers
-  //For a range of +-2g, we need to divide the raw values by 16384, according to the datasheet
+  Wire.requestFrom(MPU, 6, true); //Read data from 6 registers as each axis uses 2 registers
   AccX = (Wire.read() << 8 | Wire.read()) / range; // X-axis value
   AccY = (Wire.read() << 8 | Wire.read()) / range; // Y-axis value
   AccZ = (Wire.read() << 8 | Wire.read()) / range; // Z-axis value
-  // Calculating Roll and Pitch from the accelerometer data
-  accAngleX = (atan(AccY / sqrt(pow(AccX, 2) + pow(AccZ, 2))) * 180 / PI) - 0.58; // AccErrorX ~(0.58) See the calculate_IMU_error()custom function for more details
-  accAngleY = (atan(-1 * AccX / sqrt(pow(AccY, 2) + pow(AccZ, 2))) * 180 / PI) + 1.58; // AccErrorY ~(-1.58)
+
 
 // === Print values to SD Card === //
   myFile = SD.open("datafile.txt", FILE_WRITE);
@@ -65,9 +60,8 @@ void loop() {
   myFile.close();
 }
 void calculate_IMU_error() {
-  // We can call this function in the setup section to calculate the accelerometer and gyro data error. From here we will get the error values used in the above equations printed on the Serial Monitor.
-  // Note that we should place the IMU flat in order to get the proper values, so that we then can the correct values
-  // Read accelerometer values 200 times
+// This function was obtained online in order to combat "drift" from the sensor. It essentially runs the sensor to get data 200 times and calculates the error and drift to implements it in the main loop to 
+//ensure accurate readings and measurements
   while (c < 200) {
     Wire.beginTransmission(MPU);
     Wire.write(0x3B);
