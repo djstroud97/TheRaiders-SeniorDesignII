@@ -28,8 +28,7 @@ void loop() {
   AccX = (Wire.read() << 8 | Wire.read()) / range;
   AccY = (Wire.read() << 8 | Wire.read()) /range; 
   AccZ = (Wire.read() << 8 | Wire.read()) / range; 
-  accAngleX = (atan(AccY / sqrt(pow(AccX, 2) + pow(AccZ, 2))) * 180 / PI) - 0.58; //Math learned online on how to convert angular acceleration into resultant acceleration in each axis
-  accAngleY = (atan(-1 * AccX / sqrt(pow(AccY, 2) + pow(AccZ, 2))) * 180 / PI) + 1.58; 
+
  
 
   // Print the values on the serial monitor
