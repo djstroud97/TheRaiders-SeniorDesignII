@@ -2,12 +2,13 @@ Using Windows Batch Script (No python needed):
 	1.) Download accelGraph.bat and accelPlot.exe
 	2.) Run accelGraph.bat
 	3.) Select log file (in *.txt format) from the graphical window
-	4.) Graph window should appear along with extra data in the command terminal
 	
 Using Python 3:
-	1.) Ensure Python 3 is installed
-	2.) Ensure matplotlib and numpy modules are installed (Can be installed with pip3)
-	3.) Run command: python3 accelPlot.py insert_log_file_here.txt
+	1.) Download accelPlot.py
+	2.) Ensure Python 3 is installed
+	3.) Ensure matplotlib and numpy modules are installed (Can be installed with pip3)
+	4.) Run command: python3 accelPlot.py insert_log_file_here.txt
 
 Using Windows Executable File (No python needed):
-	1.) Run command: accelPlot insert_log_file_here.txt
+	1.) Download accelPlot.exe
+	2.) Run command: accelPlot insert_log_file_here.txt
